@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#06152b">
+  <title>VIVANT | MISSION TIMER</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="scene"></div>
+<div class="scene-glow"></div>
+<div class="scene-lines"></div>
+<div class="shade"></div>
+
+<div class="page">
+  <header>
+    <div class="brand" id="brand">
+      VIVANT
+      <small id="brandSub">25</small>
+    </div>
+    <div class="mission-tag" id="missionTag">
+      MISSION 00
+    </div>
+  </header>
+
+  <section class="main">
+    <h1 class="mission-title" id="missionTitle">
+      MISSION 01
+    </h1>
+
+    <div class="date-line">
+      <span id="dateDisplay">11.21</span>
+      <small id="weekday"></small>
+      <span class="start" id="startDisplay">
+        PM 9:00 START
+      </span>
+    </div>
+
+    <div class="hud">
+      <div class="ring">
+        <svg viewBox="0 0 200 200">
+          <circle class="ring-track"
+            cx="100" cy="100" r="90"></circle>
+          <circle class="ring-progress"
+            id="ringProgress"
+            cx="100" cy="100" r="90"></circle>
+        </svg>
+        <div class="ring-inner"></div>
+        <div class="ring-ticks"></div>
+      </div>
+
+      <div class="hud-inner">
+        <div class="hud-label" id="countLabel">
+          極秘任務開始まであと
+        </div>
+        <div class="days" id="days">000</div>
+        <div class="days-word">DAYS</div>
+        <div class="clock" id="clock">00:00:00</div>
+      </div>
+    </div>
+
+    <div class="status" id="status">
+      MISSION IN PROGRESS
+    </div>
+  </section>
+
+  <footer>
+    <div>CLASSIFIED INFORMATION</div>
+    <div id="copyright">© 2026 MISSION PROJECT</div>
+  </footer>
+</div>
+
+<button class="settings-button" id="openSettings">
+  ⚙
+</button>
+
+<dialog id="settingsDialog">
+  <div class="dialog-head">
+    <strong>MISSION SETTINGS</strong>
+    <button class="close" id="closeSettings">×</button>
+  </div>
+
+  <form id="settingsForm">
+
+    <label>
+      メインタイトル
+      <input id="missionTitleInput" value="MISSION 01">
+    </label>
+
+    <div class="row">
+      <label>
+        左上ロゴ
+        <input id="brandInput" value="VIVANT">
+      </label>
+      <label>
+        ロゴ下の文字
+        <input id="brandSubInput" value="25">
+      </label>
+    </div>
+
+    <div class="row">
+      <label>
+        ミッション番号
+        <input id="missionNoInput" value="MISSION 00">
+      </label>
+      <label>
+        表示ラベル
+        <input id="countLabelInput" value="極秘任務開始まであと">
+      </label>
+    </div>
+
+    <label>
+      カウントダウン開始日時
+      <input id="startInput" type="datetime-local" required>
+    </label>
+
+    <label>
+      目標日時
+      <input id="targetInput" type="datetime-local" required>
+    </label>
+
+    <div class="row">
+      <label>
+        終了後のメッセージ
+        <input id="afterInput" value="MISSION START">
+      </label>
+      <label>
+        フッター表記
+        <input id="footerInput" value="© 2026 MISSION PROJECT">
+      </label>
+    </div>
+
+    <div class="row">
+      <label>
+        アクセントカラー
+        <input id="accentInput" type="color" value="#16c8f2">
+      </label>
+      <label class="check">
+        秒数を表示
+        <input id="secondsInput" type="checkbox" checked>
+      </label>
+    </div>
+
+    <div class="actions">
+      <button type="button" id="resetButton">初期設定</button>
+      <button type="submit" class="primary">
+        保存して反映
+      </button>
+    </div>
+  </form>
+</dialog>
+
+<script src="script.js"></script>
+</body>
+</html>
