@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06152b">
+<title>VIVANT | MISSION TIMER</title>
+<style>
+:root{--accent:#16c8f2;--red:#e31b23;--white:#f7fbff}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,"Noto Sans JP",sans-serif;color:var(--white)}
+body{min-height:100svh;overflow-x:hidden;background:#05080e}
+.scene{position:fixed;inset:0;z-index:-3;overflow:hidden;background:
+ radial-gradient(ellipse at 50% 45%,rgba(12,77,119,.38),transparent 38%),
+ radial-gradient(ellipse at 12% 82%,rgba(0,156,190,.18),transparent 32%),
+ radial-gradient(ellipse at 88% 18%,rgba(26,65,120,.28),transparent 34%),
+ linear-gradient(135deg,#030509 0%,#091321 42%,#07101b 70%,#020407 100%)}
+.scene:before,.scene:after{content:"";position:absolute;inset:-18%;pointer-events:none}
+.scene:before{background:
+ conic-gradient(from 210deg at 50% 48%,transparent 0deg,rgba(0,196,230,.08) 45deg,transparent 105deg,rgba(35,93,165,.12) 190deg,transparent 270deg),
+ radial-gradient(ellipse at 48% 55%,rgba(0,180,210,.19),transparent 40%),
+ radial-gradient(ellipse at 72% 28%,rgba(20,72,130,.2),transparent 32%);
+ filter:blur(30px);animation:drift 18s ease-in-out infinite alternate}
+.scene:after{opacity:.42;background-image:
+ linear-gradient(rgba(100,185,220,.06) 1px,transparent 1px),
+ linear-gradient(90deg,rgba(100,185,220,.06) 1px,transparent 1px),
+ radial-gradient(circle,rgba(112,225,255,.95) 0 1px,transparent 2px),
+ radial-gradient(circle,rgba(47,164,220,.7) 0 1.5px,transparent 3px);
+ background-size:54px 54px,54px 54px,137px 151px,211px 193px;
+ background-position:center,center,10px 20px,76px 61px;
+ mask-image:linear-gradient(to bottom,transparent,#000 18%,#000 82%,transparent);
+ animation:particles 28s linear infinite}
+.scene-glow{position:fixed;inset:0;z-index:-2;pointer-events:none;background:
+ radial-gradient(ellipse at center,transparent 25%,rgba(0,0,0,.24) 75%,rgba(0,0,0,.72) 100%)}
+.scene-lines{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.3;background:
+ linear-gradient(90deg,transparent 8%,rgba(25,196,225,.16) 8.1%,transparent 8.3% 91.7%,rgba(25,196,225,.12) 91.9%,transparent 92%),
+ linear-gradient(180deg,transparent 12%,rgba(25,196,225,.12) 12.1%,transparent 12.3% 87.7%,rgba(25,196,225,.1) 87.9%,transparent 88%)}
+@keyframes drift{to{transform:translate3d(3%,-2%,0) scale(1.08)}}
+@keyframes particles{to{background-position:8px -300px,66px -220px,130px -380px}}
+.shade{position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.62),transparent 28%,rgba(0,12,32,.14) 65%,rgba(0,0,0,.55))}
+.page{width:min(760px,100%);min-height:100svh;margin:auto;padding:clamp(22px,5vw,42px) clamp(18px,5vw,38px) 24px;display:flex;flex-direction:column}
+header{display:flex;align-items:flex-start;justify-content:space-between}
+.brand{font-weight:1000;font-style:italic;color:var(--red);font-size:clamp(30px,8vw,52px);line-height:.9;letter-spacing:-.07em}
+.brand small{display:block;text-align:center;font-size:17px;letter-spacing:0;margin-top:8px}
+.mission-tag{font-weight:900;letter-spacing:.04em;font-size:clamp(15px,4vw,23px);padding-top:8px}
+.main{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:40px 0 28px}
+.mission-title{font-size:clamp(48px,13vw,96px);font-weight:950;letter-spacing:.015em;line-height:1;margin:0 0 20px;text-shadow:0 4px 24px #00152e}
+.date-line{font-size:clamp(19px,5vw,34px);font-weight:400;letter-spacing:.01em}
+.date-line .start{font-weight:500;margin-left:12px}
+.date-line small{font-size:.48em}
+.hud{width:min(76vw,430px);aspect-ratio:1;margin:clamp(36px,8vh,76px) auto 0;position:relative;display:grid;place-items:center}
+.ring{position:absolute;inset:0;border-radius:50%;filter:drop-shadow(0 0 8px #00baff55)}
+.ring svg{width:100%;height:100%;overflow:visible;transform:rotate(-90deg)}
+.ring-track{fill:none;stroke:rgba(195,229,255,.42);stroke-width:7}
+.ring-progress{fill:none;stroke:var(--accent);stroke-width:7;stroke-linecap:round;stroke-dasharray:565.49;stroke-dashoffset:0;transition:stroke-dashoffset .85s linear}
+.ring-inner{position:absolute;inset:12px;border-radius:50%;border:2px solid rgba(146,222,255,.35);pointer-events:none}
+.ring-ticks{position:absolute;inset:5%;border-radius:50%;border:1px dashed rgba(22,200,242,.42);pointer-events:none}
+.hud-inner{position:relative;z-index:1;width:80%;display:flex;flex-direction:column;align-items:center}
+.hud-label{font-size:clamp(13px,3.6vw,19px);letter-spacing:.08em;margin-bottom:6px}
+.days{font-size:clamp(86px,23vw,142px);font-weight:300;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.days-word{font-size:clamp(22px,6vw,34px);line-height:1.1;margin-top:-2px}
+.clock{font-size:clamp(28px,8vw,52px);font-weight:300;letter-spacing:.035em;font-variant-numeric:tabular-nums;margin-top:12px}
+.status{margin-top:18px;color:#bceeff;font-size:12px;letter-spacing:.18em}
+footer{text-align:center;font-size:11px;color:#e3f4ff;line-height:1.8;text-shadow:0 2px 8px #001}
+.footer-links{text-decoration:underline;text-underline-offset:3px}
+.settings-button{position:fixed;right:18px;bottom:18px;width:48px;height:48px;border:1px solid #8bdfff77;border-radius:50%;background:#071a30cc;color:white;font-size:20px;cursor:pointer;backdrop-filter:blur(12px);box-shadow:0 4px 20px #0005}
+dialog{width:min(420px,calc(100% - 28px));border:1px solid #3e7194;background:rgba(4,16,31,.97);color:#f5fbff;padding:0;box-shadow:0 20px 70px #000b}
+dialog::backdrop{background:#0009;backdrop-filter:blur(5px)}
+.dialog-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #24435e}
+.dialog-head strong{letter-spacing:.15em;font-size:13px}
+.close{border:0;background:none;color:#d7efff;font-size:24px;cursor:pointer}
+form{padding:18px 20px 20px;display:grid;gap:13px}
+label{display:grid;gap:6px;font-size:11px;color:#9dbbd1;letter-spacing:.06em}
+input{width:100%;background:#081d33;border:1px solid #31516d;color:white;padding:11px 10px;font:inherit;border-radius:2px;min-width:0}
+input[type=color]{height:40px;padding:4px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.check{display:flex;align-items:center;gap:9px}
+.check input{width:auto}
+.actions{display:flex;gap:10px;margin-top:4px}
+.actions button{flex:1;padding:12px;border:1px solid #3a6c8e;background:#0c2c49;color:white;cursor:pointer;letter-spacing:.08em}
+.actions button.primary{background:var(--accent);border-color:var(--accent);color:#001321;font-weight:800}
+@media(max-height:720px){.main{padding:22px 0}.hud{width:min(64vw,330px);margin-top:28px}.days{font-size:clamp(72px,19vw,110px)}}
+</style>
+</head>
+<body>
+<div class="scene"></div><div class="scene-glow"></div><div class="scene-lines"></div><div class="shade"></div>
+<div class="page">
+<header>
+  <div class="brand" id="brand">VIVANT<small id="brandSub">25</small></div>
+  <div class="mission-tag" id="missionTag">MISSION 00</div>
+</header>
+<section class="main">
+  <h1 class="mission-title" id="missionTitle">MISSION 01</h1>
+  <div class="date-line"><span id="dateDisplay">11.21</span><small id="weekday"></small><span class="start" id="startDisplay">PM 9:00 START</span></div>
+  <div class="hud">
+    <div class="ring" aria-label="残り時間の円形ゲージ">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <circle class="ring-track" cx="100" cy="100" r="90"></circle>
+        <circle class="ring-progress" id="ringProgress" cx="100" cy="100" r="90"></circle>
+      </svg>
+      <div class="ring-inner"></div><div class="ring-ticks"></div>
+    </div>
+    <div class="hud-inner">
+      <div class="hud-label" id="countLabel">極秘任務開始まであと</div>
+      <div class="days" id="days">000</div>
+      <div class="days-word" id="daysWord">DAYS</div>
+      <div class="clock" id="clock">00:00:00</div>
+    </div>
+  </div>
+  <div class="status" id="status">MISSION IN PROGRESS</div>
+</section>
+<footer><div class="footer-links">CLASSIFIED INFORMATION</div><div id="copyright">© 2026 MISSION PROJECT</div></footer>
+</div>
+<button class="settings-button" id="openSettings" aria-label="設定">⚙</button>
+<dialog id="settingsDialog">
+  <div class="dialog-head"><strong>MISSION SETTINGS</strong><button class="close" id="closeSettings" aria-label="閉じる">×</button></div>
+  <form id="settingsForm">
+    <label>メインタイトル<input id="missionTitleInput" maxlength="40" value="MISSION 01"></label>
+    <div class="row">
+      <label>左上ロゴ<input id="brandInput" maxlength="18" value="VIVANT"></label>
+      <label>ロゴ下の文字<input id="brandSubInput" maxlength="8" value="25"></label>
+    </div>
+    <div class="row">
+      <label>ミッション番号<input id="missionNoInput" maxlength="12" value="MISSION 00"></label>
+      <label>表示ラベル<input id="countLabelInput" maxlength="30" value="極秘任務開始まであと"></label>
+    </div>
+    <label>目標日時<input id="targetInput" type="datetime-local" value="2026-11-21T21:00" required></label>
+    <div class="row">
+      <label>開始後のメッセージ<input id="afterInput" maxlength="40" value="MISSION START"></label>
+      <label>フッター表記<input id="footerInput" maxlength="40" value="© 2026 MISSION PROJECT"></label>
+    </div>
+    <div class="row">
+      <label>アクセントカラー<input id="accentInput" type="color" value="#16c8f2"></label>
+      <label class="check"><span>秒数を表示</span><input id="secondsInput" type="checkbox" checked></label>
+    </div>
+    <div class="actions"><button type="button" id="resetButton">初期設定</button><button class="primary" type="submit">保存して反映</button></div>
+  </form>
+</dialog>
+<script>
+const $=id=>document.getElementById(id);
+const defaults={title:"MISSION 01",brand:"VIVANT",brandSub:"25",missionNo:"MISSION 00",label:"極秘任務開始まであと",target:"2026-11-21T21:00",after:"MISSION START",footer:"© 2026 MISSION PROJECT",accent:"#16c8f2",seconds:true};
+let cfg={...defaults};\nlet countdownStartedAt=Date.now();
+try{const saved=localStorage.getItem("missionTimerConfig");if(saved){const parsed=JSON.parse(saved);cfg={...cfg,...parsed};countdownStartedAt=parsed.countdownStartedAt||Date.now()}}catch(e){}
+function pad(n){return String(n).padStart(2,"0")}
+function render(){
+ const t=new Date(cfg.target),valid=Number.isFinite(t.getTime()),now=Date.now(),diff=t.getTime()-now;
+ const totalDuration=Math.max(1,t.getTime()-countdownStartedAt);
+ const fraction=valid?Math.max(0,Math.min(1,diff/totalDuration)):0;
+ const circumference=2*Math.PI*90;
+ $("ringProgress").style.strokeDasharray=String(circumference);
+ $("ringProgress").style.strokeDashoffset=String(circumference*(1-fraction));
+ document.documentElement.style.setProperty("--accent",cfg.accent);
+ $("missionTitle").textContent=cfg.title;$("brand").firstChild.textContent=cfg.brand;
+ $("brandSub").textContent=cfg.brandSub;$("missionTag").textContent=cfg.missionNo;
+ $("countLabel").textContent=cfg.label;$("copyright").textContent=cfg.footer;
+ $("clock").style.display=cfg.seconds?"block":"none";
+ if(!valid){$("days").textContent="---";$("clock").textContent="--:--:--";return}
+ const y=t.getFullYear(),m=pad(t.getMonth()+1),d=pad(t.getDate());
+ $("dateDisplay").textContent=m+"."+d;
+ $("weekday").textContent=" ("+["SUN","MON","TUE","WED","THU","FRI","SAT"][t.getDay()]+")";
+ const h=t.getHours(),ampm=h>=12?"PM":"AM",h12=h%12||12;
+ $("startDisplay").textContent=ampm+" "+h12+":"+pad(t.getMinutes())+" START";
+ if(diff<=0){$("days").textContent="0";$("clock").textContent="00:00:00";$("status").textContent=cfg.after;return}
+ const total=Math.floor(diff/1000),days=Math.floor(total/86400),hours=Math.floor(total%86400/3600),mins=Math.floor(total%3600/60),secs=total%60;
+ $("days").textContent=String(days);$("clock").textContent=pad(hours)+":"+pad(mins)+":"+pad(secs);$("status").textContent="MISSION IN PROGRESS";
+}
+function fillForm(){
+ $("missionTitleInput").value=cfg.title;$("brandInput").value=cfg.brand;$("brandSubInput").value=cfg.brandSub;
+ $("missionNoInput").value=cfg.missionNo;$("countLabelInput").value=cfg.label;$("targetInput").value=cfg.target;
+ $("afterInput").value=cfg.after;$("footerInput").value=cfg.footer;$("accentInput").value=cfg.accent;$("secondsInput").checked=cfg.seconds;
+}
+$("openSettings").onclick=()=>{$("settingsDialog").showModal();fillForm()};
+$("closeSettings").onclick=()=>$("settingsDialog").close();
+$("settingsForm").onsubmit=e=>{e.preventDefault();cfg={title:$("missionTitleInput").value,brand:$("brandInput").value,brandSub:$("brandSubInput").value,missionNo:$("missionNoInput").value,label:$("countLabelInput").value,target:$("targetInput").value,countdownStartedAt:Date.now(),after:$("afterInput").value,footer:$("footerInput").value,accent:$("accentInput").value,seconds:$("secondsInput").checked};try{localStorage.setItem("missionTimerConfig",JSON.stringify(cfg))}catch(e){}render();$("settingsDialog").close()};
+$("resetButton").onclick=()=>{cfg={...defaults};countdownStartedAt=Date.now();try{localStorage.removeItem("missionTimerConfig")}catch(e){}fillForm();render()};
+render();setInterval(render,1000);
+</script>
+</body>
+</html>
