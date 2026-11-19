@@ -16,7 +16,7 @@ const defaults = {
   missionNo: "MISSION 00",
   label: "極秘任務開始まであと",
   start: localDateTime(),
-  target: "2026-11-21T21:00",
+  target: "2026-12-1T21:00",
   after: "MISSION START",
   footer: "© 2026 MISSION PROJECT",
   accent: "#16c8f2",
